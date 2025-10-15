@@ -30,7 +30,7 @@ API Token (API_TOKEN): Generate an API token from your Mist User Settings. Ensur
 
 Organization ID (ORG_ID): You can find your organization ID in the Mist URL when logged in (e.g., https://manage.mist.com/orgs/<ORG_ID>/...).
 
-Edit the PHP File: Open client_history_search.php and update the constants at the top of the file:
+Edit the PHP File: Open clams.php and update the constants at the top of the file:
 
 // =========================================================================
 // Configuration - REPLACE THESE WITH YOUR ACTUAL MIST VALUES
@@ -40,7 +40,7 @@ const API_TOKEN = 'YOUR_MIST_API_TOKEN_HERE';          // <-- REPLACE THIS
 const ORG_ID = 'YOUR_MIST_ORG_ID_HERE';                // <-- REPLACE THIS
 // =========================================================================
 
-Deployment: Place the configured client_history_search.php file on your web server and access it via your browser.
+Deployment: Place the configured clams.php file on your web server and access it via your browser.
 
 🏃 Usage
 Access the Tool: Navigate to the file's URL in your web browser.
