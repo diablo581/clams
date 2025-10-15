@@ -20,6 +20,8 @@ const API_TOKEN = 'YOUR_MIST_API_TOKEN_HERE';
 const ORG_ID = 'YOUR_MIST_ORG_ID_HERE';
 // SITE_ID is no longer used for org-wide search, but kept for clarity
 const SITE_ID = 'YOUR_MIST_SITE_ID_HERE'; 
+// NEW: Timezone to display results in (e.g., 'America/New_York', 'Europe/London')
+const TIMEZONE = 'America/New_York';
 // =========================================================================
 
 $results = null;
@@ -230,8 +232,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['client_identifier']))
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <?php foreach ($results as $client): 
-                                    // last_seen is a timestamp in seconds
-                                    $last_seen = isset($client['timestamp']) ? date('Y-m-d H:i:s', floor($client['timestamp'])) : 'N/A';
+                                    // Timezone conversion logic
+                                    $last_seen = 'N/A';
+                                    if (isset($client['timestamp'])) {
+                                        try {
+                                            // Mist API timestamps are typically seconds since epoch
+                                            $dt = new DateTimeImmutable('@' . floor($client['timestamp']));
+                                            $tz = new DateTimeZone(TIMEZONE);
+                                            $dt = $dt->setTimezone($tz);
+                                            // Format includes the timezone abbreviation (T) for clarity
+                                            $last_seen = $dt->format('Y-m-d H:i:s T'); 
+                                        } catch (Exception $e) {
+                                            $last_seen = 'Timezone Error';
+                                        }
+                                    }
                                     
                                     // Use last_hostname, fallback to mac
                                     $client_name = $client['last_hostname'] ?? $client['mac'];
@@ -263,6 +277,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['client_identifier']))
                     <ul class="text-sm list-disc pl-5 mt-2 space-y-1 break-all">
                         <li>**Configured Base URL:** <code class="font-mono"><?php echo MIST_API_BASE_URL; ?></code></li>
                         <li>**Configured Org ID:** <code class="font-mono"><?php echo ORG_ID; ?></code></li>
+                        <li>**Configured Timezone:** <code class="font-mono"><?php echo TIMEZONE; ?></code></li>
                         <?php 
                         // Display all logged API calls
                         foreach ($apiCallsDebug as $index => $url) {
@@ -284,4 +299,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['client_identifier']))
     </div>
 </body>
 </html>
-
